@@ -7,6 +7,7 @@ Como todos los spots tienen la misma orientación, a todos les beneficia por igu
 
 ## Estructura del proyecto
 
+```text
 surf-session-prediction/ 
 │
 ├── data/ 
@@ -27,7 +28,7 @@ surf-session-prediction/
 └── README.md
 
 
-
+```
 
 ##  Datos
 
