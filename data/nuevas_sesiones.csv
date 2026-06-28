@@ -1,0 +1,6 @@
+fecha,spot,altura_ola_m,periodo_s,direccion_swell,viento_kmh,direccion_viento,marea,temp_agua,valoracion
+2026-07-01,somo,1.4,11,315,8,S,media,20.1,4
+2026-07-02,somo,0.5,6,280,25,N,alta,20.0,2
+2026-07-03,Sopela,1.8,13,300,6,SE,baja,,5
+2026-07-04,sardinero,0.9,9,320,,SW,media,19.7,3
+2026-07-05,Patin,2.2,14,295,18,W,alta,19.9,4
