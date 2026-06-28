@@ -42,17 +42,13 @@ def load_model(model_path: Path):
 
     return joblib.load(model_path)
 
-
-def predict_sessions(model, input_path : Path) -> pd.DataFrame:
+def predict_sessions(model, input_path: Path) -> pd.DataFrame:
     """
-    Carga sesiones nuevas en bruto y devuelve un DataFrame con predicciones.
-
-    Si el CSV incluye la columna buena_sesion, se elimina antes de predecir,
-    porque en inferencia real esa columna no estaría disponible.
+    Lee un CSV con sesiones nuevas en bruto y devuelve las predicciones.
     """
 
     if not input_path.exists():
-        raise FileNotFoundError(f"No se ha encontrado el archivo: {input_path}")
+        raise FileNotFoundError(f"No se encontró el archivo de entrada: {input_path}")
 
     df = pd.read_csv(input_path)
 
@@ -60,23 +56,31 @@ def predict_sessions(model, input_path : Path) -> pd.DataFrame:
 
     if TARGET in X.columns:
         X = X.drop(columns=[TARGET])
-    
+
+    # Predicción normal
     y_pred = model.predict(X)
 
-    results = df.copy()
-    results["prediccion"] = y_pred
-    results["prediccion_label"] = results["prediccion"].map({
+    # Recuperar el cleaner dentro del pipeline
+    cleaner = model.named_steps["preprocessor"].named_steps["cleaner"]
+
+    # Aplicar solo la limpieza interpretable, no el one-hot ni el escalado
+    X_clean = cleaner.transform(X)
+
+    predictions = X_clean.copy()
+    predictions["prediccion"] = y_pred
+    predictions["prediccion_label"] = predictions["prediccion"].map({
         0: "No",
-        1: "Yes"
+        1: "Yes",
     })
 
     if hasattr(model, "predict_proba"):
         proba = model.predict_proba(X)
 
-        if proba.shape[1] == 2:
-            results["probabilidad_buena_sesion"] = proba[:, 1]
+        if 1 in model.classes_:
+            class_1_index = list(model.classes_).index(1)
+            predictions["probabilidad_buena_sesion"] = proba[:, class_1_index]
 
-    return results
+    return predictions
 
 
 
